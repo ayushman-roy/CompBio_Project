@@ -1,0 +1,99 @@
+Model Assumptions and Parameters
+=============================
+
+1. Population Structure
+----------------------
+- Population divided into 4 age groups:
+  * 0-19 years (Children/Teens)
+  * 20-39 years (Young Adults)
+  * 40-59 years (Middle Age)
+  * 60+ years (Elderly)
+- Each age group has different:
+  * Susceptibility to infection
+  * Recovery rates
+  * Vaccine effectiveness
+  * Base mortality rates
+  * Viral load sensitivity
+
+2. Disease Dynamics
+------------------
+- Viral load follows a three-phase pattern:
+  * Incubation (0-3 days): Slow exponential growth
+  * Peak (3-8 days): Maximum viral load
+  * Decline (8+ days): Exponential decay
+- Transmission rate depends on:
+  * Base transmission rate (beta)
+  * Contact rates between age groups
+  * Viral load level
+  * Age-specific susceptibility
+
+3. Intervention Parameters
+-------------------------
+- Quarantine rate (theta): 0.05
+  * Fraction of infected individuals isolated
+  * Reduces transmission but increases mortality risk
+- Vaccination rate (nu): 0.002
+  * Rate at which susceptible individuals are vaccinated
+  * Effectiveness varies by age group
+
+4. Mortality Dynamics
+--------------------
+- Mortality depends on:
+  * Age group
+  * Viral load level
+  * Time since infection
+  * Quarantine status
+- Base mortality rates by age:
+  * 0-19: 0.0001
+  * 20-39: 0.0005
+  * 40-59: 0.002
+  * 60+: 0.01
+- Viral load sensitivity multipliers:
+  * 0-19: 1.0
+  * 20-39: 1.5
+  * 40-59: 2.0
+  * 60+: 3.0
+
+5. Contact Patterns
+------------------
+- Contact matrix represents average daily contacts:
+  * Higher within age groups
+  * Children have more contacts
+  * Elderly have fewer contacts
+  * Inter-generational contacts are asymmetric
+
+6. Model Limitations
+-------------------
+- Assumes homogeneous mixing within age groups
+- Does not account for:
+  * Healthcare capacity constraints
+  * Seasonal variations
+  * Geographic distribution
+  * Comorbidities
+  * Long-term effects
+  * Reinfection
+  * Waning immunity
+
+7. Simulation Parameters
+-----------------------
+- Time horizon: 180 days
+- Time step: 0.18 days (1000 points)
+- Initial conditions:
+  * 99% susceptible
+  * 1% infected
+  * Initial viral load: 0.1
+
+8. Output Analysis
+-----------------
+- Tracks:
+  * Cumulative deaths by age group
+  * Daily death rates
+  * Viral load impact on mortality
+  * Case fatality rates
+  * Peak daily deaths
+  * Average viral loads
+- Generates:
+  * Time series plots
+  * Scatter plots
+  * Bar charts
+  * Text analysis files 
