@@ -1,0 +1,5 @@
+{
+    "quarantine_rate": 0.4,
+    "vaccination_rate": 0.01,
+    "description": "high_quarantine"
+}

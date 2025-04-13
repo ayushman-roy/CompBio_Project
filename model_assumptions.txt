@@ -3,17 +3,13 @@ Model Assumptions and Parameters
 
 1. Population Structure
 ----------------------
-- Population divided into 4 age groups:
-  * 0-19 years (Children/Teens)
-  * 20-39 years (Young Adults)
-  * 40-59 years (Middle Age)
-  * 60+ years (Elderly)
-- Each age group has different:
-  * Susceptibility to infection
-  * Recovery rates
-  * Vaccine effectiveness
-  * Base mortality rates
-  * Viral load sensitivity
+- Total population: 1,000,000 people
+- All outputs are presented as percentages of total population
+- Age group distribution:
+  - 0-19 years: 250,000 people (25%)
+  - 20-39 years: 300,000 people (30%)
+  - 40-59 years: 250,000 people (25%)
+  - 60+ years: 200,000 people (20%)
 
 2. Disease Dynamics
 ------------------
@@ -32,11 +28,11 @@ Model Assumptions and Parameters
 - Quarantine rates (theta):
   * Baseline: 0.05
   * High: 0.40
-  * Extreme: 0.60
+  * Low: 0.01
 - Vaccination rates (nu):
   * Baseline: 0.01
   * High: 0.10
-  * Extreme: 0.10
+  * Low: 0.001
 
 4. Age Group Parameters
 ----------------------
@@ -127,3 +123,127 @@ Model Assumptions and Parameters
   * Bar charts
   * JSON analysis files
   * Comparison visualizations 
+
+## Disease States
+All states are tracked as percentages of total population:
+- S: Susceptible (can get infected)
+- I: Infected (currently sick)
+- Q: Quarantined (isolated to prevent spread)
+- R: Recovered (got better)
+- V: Vaccinated (protected)
+- D: Dead (died from the disease)
+- L: Viral Load (how much virus is in their body)
+
+## Age-Specific Parameters
+All rates are per capita and scaled to percentages:
+
+### Children/Teens (0-19)
+- Population: 250,000 (25%)
+- Susceptibility: 0.8 (relative to baseline)
+- Recovery rate: 1.2 (relative to baseline)
+- Vaccine effectiveness: 0.7
+- Mortality rate: 0.0002 (0.02% per day)
+- Viral load sensitivity: 1.2
+
+### Young Adults (20-39)
+- Population: 300,000 (30%)
+- Susceptibility: 1.0 (baseline)
+- Recovery rate: 1.0 (baseline)
+- Vaccine effectiveness: 0.8
+- Mortality rate: 0.001 (0.1% per day)
+- Viral load sensitivity: 1.8
+
+### Middle Age (40-59)
+- Population: 250,000 (25%)
+- Susceptibility: 1.2 (relative to baseline)
+- Recovery rate: 0.9 (relative to baseline)
+- Vaccine effectiveness: 0.85
+- Mortality rate: 0.005 (0.5% per day)
+- Viral load sensitivity: 2.5
+
+### Elderly (60+)
+- Population: 200,000 (20%)
+- Susceptibility: 1.5 (relative to baseline)
+- Recovery rate: 0.7 (relative to baseline)
+- Vaccine effectiveness: 0.9
+- Mortality rate: 0.02 (2% per day)
+- Viral load sensitivity: 3.5
+
+## Disease Transmission
+- Base transmission rate (β): 0.3 per day
+- Contact matrix represents relative contact rates between age groups
+- Viral load affects transmission rate multiplicatively
+- All transmission rates are scaled to percentages
+
+## Recovery and Mortality
+- Base recovery rate (γ): 0.1 per day
+- Age-specific mortality rates are scaled to percentages
+- Viral load affects mortality rate multiplicatively
+- All rates are per capita and converted to percentages
+
+## Public Health Interventions
+All intervention rates are scaled to percentages:
+
+### Quarantine
+- Baseline rate: 0.05 (5% per day)
+- High quarantine: 0.40 (40% per day)
+- Low quarantine: 0.01 (1% per day)
+
+### Vaccination
+- Baseline rate: 0.01 (1% per day)
+- High vaccination: 0.10 (10% per day)
+- Low vaccination: 0.001 (0.1% per day)
+
+## Viral Load Dynamics
+- Incubation period: 3 days
+- Peak viral load: 1.0 (100%)
+- Viral load decay rate: 0.1 per day
+- All viral load values are relative to maximum
+
+## Simulation Parameters
+- Time horizon: 180 days
+- Time steps: 1000 points
+- Initial infected: 1% of each age group
+- All initial conditions are percentages
+
+## Analysis Metrics
+All metrics are calculated as percentages:
+
+### Basic Reproduction Number (R₀)
+- Calculated from transmission and recovery rates
+- Accounts for quarantine effectiveness
+- Expressed as a ratio
+
+### Infection Fatality Ratio (IFR)
+- Deaths as percentage of total infections
+- Age-specific and overall calculations
+- Includes both infected and quarantined cases
+
+### Years of Life Lost (YLL)
+- Based on age-specific mortality
+- Assumes life expectancy of 80 years
+- Expressed in years per 100,000 population
+
+### Healthcare Demand
+- Peak infected percentage
+- Age-specific hospitalization rates
+- ICU requirements as percentages
+
+## Limitations and Simplifications
+1. Population fixed at 1 million
+2. All outputs are percentages
+3. No demographic changes
+4. No migration
+5. No reinfection
+6. No waning immunity
+7. No healthcare capacity constraints
+8. No geographic distribution
+9. No behavioral changes
+10. No seasonality effects
+
+## Validation and Calibration
+- Parameters based on COVID-19 literature
+- Age-specific rates from epidemiological studies
+- Contact patterns from social mixing data
+- Mortality rates from clinical studies
+- All rates validated against real-world percentages 

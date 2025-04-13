@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project implements a sophisticated epidemiological model that simulates the spread of a disease (like COVID-19) through a population divided into different age groups. The model tracks how the disease spreads, how people recover, and unfortunately, how some people die from the disease. It's particularly useful for understanding how different age groups are affected and how public health measures like quarantine and vaccination can help control the outbreak.
+This project implements a sophisticated epidemiological model that simulates the spread of a disease (like COVID-19) through a population of 1 million people divided into different age groups. The model tracks how the disease spreads, how people recover, and unfortunately, how some people die from the disease. All outputs are presented as percentages of the total population, making it easier to understand the relative impact across different scenarios.
 
 ### In Plain English
 
-Think of this model as a virtual city where:
+Think of this model as a virtual city of 1 million people where:
 - People are divided into different age groups (kids, young adults, middle-aged, and elderly)
 - The disease spreads when people come into contact with each other
 - Some people get sicker than others, especially older people
@@ -14,16 +14,17 @@ Think of this model as a virtual city where:
   - Isolating sick people (quarantine)
   - Giving people vaccines
   - Understanding how the amount of virus in someone affects how sick they get
+- All results are shown as percentages (e.g., "2% of the population died" instead of "20,000 people died")
 
 ## Model Components
 
 ### 1. Population Structure
 
-The model divides the population into four age groups:
-- 0-19 years (Children/Teens)
-- 20-39 years (Young Adults)
-- 40-59 years (Middle Age)
-- 60+ years (Elderly)
+The model divides the population of 1 million into four age groups:
+- 0-19 years (Children/Teens) - 250,000 people (25%)
+- 20-39 years (Young Adults) - 300,000 people (30%)
+- 40-59 years (Middle Age) - 250,000 people (25%)
+- 60+ years (Elderly) - 200,000 people (20%)
 
 Each age group has different characteristics:
 - How likely they are to get infected
@@ -42,6 +43,8 @@ The model tracks seven different states for each person:
 - **V**: Vaccinated (protected)
 - **D**: Dead (died from the disease)
 - **L**: Viral Load (how much virus is in their body)
+
+All states are tracked as percentages of the total population.
 
 ### 3. Disease Spread
 
@@ -123,24 +126,24 @@ Each age group has specific epidemiological characteristics:
 
 ```python
 age_groups = [
-    AgeGroup("0-19", 0.8, 1.2, 0.7, 0.25, 0.0002, 1.2),    # Children/Teens
-    AgeGroup("20-39", 1.0, 1.0, 0.8, 0.30, 0.001, 1.8),    # Young Adults
-    AgeGroup("40-59", 1.2, 0.9, 0.85, 0.25, 0.005, 2.5),   # Middle Age
-    AgeGroup("60+", 1.5, 0.7, 0.9, 0.20, 0.02, 3.5)        # Elderly
+    AgeGroup("0-19", 0.8, 1.2, 0.7, 0.25, 0.0002, 1.2),    # Children/Teens (250,000 people)
+    AgeGroup("20-39", 1.0, 1.0, 0.8, 0.30, 0.001, 1.8),    # Young Adults (300,000 people)
+    AgeGroup("40-59", 1.2, 0.9, 0.85, 0.25, 0.005, 2.5),   # Middle Age (250,000 people)
+    AgeGroup("60+", 1.5, 0.7, 0.9, 0.20, 0.02, 3.5)        # Elderly (200,000 people)
 ]
 ```
 
 ### Simulation Parameters
 
-The model includes various intervention scenarios with extreme values:
+The model includes various intervention scenarios:
 
 ```python
 scenarios = [
-    ("baseline", 0.05, 0.01),
-    ("high_quarantine", 0.40, 0.01),      # 80% quarantine rate
-    ("high_vaccination", 0.05, 0.10),     # 10% vaccination rate
-    ("high_both", 0.40, 0.10),           # Both high
-    ("low_both", 0.01, 0.001),           # Minimal interventions
+    ("baseline", 0.05, 0.01),           # Baseline scenario
+    ("high_quarantine", 0.40, 0.01),    # High quarantine rate
+    ("high_vaccination", 0.05, 0.10),   # High vaccination rate
+    ("high_both", 0.40, 0.10),         # Both high
+    ("low_both", 0.01, 0.001),         # Both low
 ]
 ```
 
@@ -153,7 +156,7 @@ The model uses the `odeint` solver from SciPy with:
 
 ### Analysis Metrics
 
-The model calculates several key metrics:
+The model calculates several key metrics, all as percentages of the total population:
 
 1. **Basic Reproduction Number (R₀)**:
    ```python
@@ -162,7 +165,7 @@ The model calculates several key metrics:
 
 2. **Infection Fatality Ratio (IFR)**:
    ```python
-   IFR = D/(I + Q + R + D)
+   IFR = D/(I + Q + R + D) * 100  # As percentage
    ```
 
 3. **Years of Life Lost (YLL)**:
@@ -173,18 +176,121 @@ The model calculates several key metrics:
 
 4. **Peak Healthcare Demand**:
    ```python
-   peak_demand = max(I + Q)
+   peak_demand = max(I + Q) * 100  # As percentage
    ```
 
 ### Output Analysis
 
 The model generates detailed analysis including:
-- Time series of all compartments
-- Age-specific mortality curves
+- Time series of all compartments (as percentages)
+- Age-specific mortality curves (as percentages)
 - Viral load trajectories
-- Intervention effectiveness
-- Healthcare system burden
+- Intervention effectiveness (as percentages)
+- Healthcare system burden (as percentages)
 - Economic impact estimates
+
+## Understanding Percentage-Based Calculations
+
+### Example Calculations
+
+1. **Population Distribution**:
+   - Total population: 1,000,000
+   - Example: 25% of population in 0-19 age group
+   - Calculation: 1,000,000 × 0.25 = 250,000 people
+
+2. **Daily Mortality Rates**:
+   - Elderly mortality rate: 2% per day
+   - Example: If 100 elderly are infected
+   - Calculation: 100 × 0.02 = 2 deaths per day
+
+3. **Vaccination Coverage**:
+   - High vaccination rate: 10% per day
+   - Example: If 500,000 susceptible
+   - Calculation: 500,000 × 0.10 = 50,000 vaccinated per day
+
+4. **Infection Fatality Ratio (IFR)**:
+   - Example: 1,000 total infections, 20 deaths
+   - Calculation: (20/1000) × 100 = 2% IFR
+
+5. **Years of Life Lost (YLL)**:
+   - Example: 100 deaths in 40-59 age group (midpoint 50)
+   - Calculation: 100 × (80 - 50) = 3,000 YLL
+
+### Interpreting Percentage Outputs
+
+1. **Population Impact**:
+   - 1% of population = 10,000 people
+   - 0.1% daily change = 1,000 people affected
+   - Small percentages can represent large numbers
+
+2. **Rate Interpretation**:
+   - Daily rates are per capita
+   - Example: 0.5% daily mortality = 5 deaths per 1000 infected
+   - Rates compound over time
+
+3. **Relative Changes**:
+   - Doubling from 1% to 2% = 10,000 more people
+   - 50% reduction in transmission = half as many new cases
+   - Percentage changes show relative impact
+
+4. **Age-Specific Metrics**:
+   - Rates are relative to age group size
+   - Example: 1% mortality in elderly = 2,000 people
+   - Same percentage, different absolute numbers
+
+### Scaling Process Details
+
+1. **Population Scaling**:
+   - All initial conditions sum to 100%
+   - Each age group starts as fraction of total
+   - Example: 25% susceptible = 250,000 people
+
+2. **Rate Conversion**:
+   - Raw rates converted to daily percentages
+   - Example: 0.3 transmission rate = 30% chance per contact
+   - All rates normalized to daily basis
+
+3. **Contact Matrix Scaling**:
+   - Contact rates relative to baseline
+   - Example: 3.0 means 3× more contacts than baseline
+   - Matrix values are multipliers
+
+4. **Viral Load Scaling**:
+   - Peak load = 100% (1.0)
+   - All values relative to maximum
+   - Example: 0.5 = 50% of peak viral load
+
+5. **Intervention Scaling**:
+   - Rates represent daily percentage of population
+   - Example: 5% quarantine = 50,000 people per day
+   - Rates can exceed 100% for multiple interventions
+
+6. **Output Scaling**:
+   - All results converted to percentages
+   - Example: 0.02 = 2% of population
+   - Easy conversion to absolute numbers
+
+### Practical Examples
+
+1. **Outbreak Size**:
+   - 5% total infected = 50,000 people
+   - 0.1% daily new cases = 1,000 people
+   - 0.02% mortality = 200 deaths
+
+2. **Intervention Impact**:
+   - 40% quarantine = 400,000 isolated
+   - 10% vaccination = 100,000 protected
+   - Combined effect reduces transmission by 50%
+
+3. **Healthcare Demand**:
+   - 1% hospitalized = 10,000 beds
+   - 0.1% ICU = 1,000 critical cases
+   - Peak demand shows maximum strain
+
+4. **Economic Impact**:
+   - 2% workforce infected = 20,000 workers
+   - 0.5% daily absenteeism = 5,000 people
+   - Productivity loss as percentage of total
 
 ## Usage
 
@@ -202,6 +308,7 @@ python script.py
 - Each simulation creates a timestamped directory
 - Comparison visualizations are in the `comparison` subdirectory
 - Detailed analysis is available in JSON format
+- All metrics are presented as percentages of the total population
 
 ## Model Limitations
 
@@ -216,6 +323,7 @@ python script.py
    - Constant intervention rates
    - No reinfection
    - No waning immunity
+   - Total population of 1 million people
 
 ## Future Improvements
 

@@ -1,0 +1,73 @@
+{
+    "age_groups": {
+        "0-19": {
+            "total_deaths": 0.2427578935557797,
+            "peak_daily_deaths": 0.004449555295632545,
+            "average_viral_load": 0.7102483791285895,
+            "case_fatality_rate": 0.9710315742231188,
+            "mortality_rate": 0.0002,
+            "viral_load_sensitivity": 1.2,
+            "total_infected": 2.6363224257024625e-08,
+            "peak_infected": 16.863417125374028,
+            "infection_fatality_ratio": 920820197.0633222,
+            "time_to_peak_deaths": 10.81081081081081,
+            "mortality_rate_per_100k": 242.7578935557797,
+            "years_of_life_lost": 17.114431495682467
+        },
+        "20-39": {
+            "total_deaths": 2.219803948729178,
+            "peak_daily_deaths": 0.03888556229028478,
+            "average_viral_load": 0.7102483791285895,
+            "case_fatality_rate": 7.399346495763927,
+            "mortality_rate": 0.001,
+            "viral_load_sensitivity": 1.8,
+            "total_infected": 7.050684437587738e-07,
+            "peak_infected": 20.52304423148596,
+            "infection_fatality_ratio": 314835243.0716135,
+            "time_to_peak_deaths": 10.99099099099099,
+            "mortality_rate_per_100k": 2219.803948729178,
+            "years_of_life_lost": 112.10009941082349
+        },
+        "40-59": {
+            "total_deaths": 9.316628071604873,
+            "peak_daily_deaths": 0.18920418540929254,
+            "average_viral_load": 0.7102483791285895,
+            "case_fatality_rate": 37.26651228641949,
+            "mortality_rate": 0.005,
+            "viral_load_sensitivity": 2.5,
+            "total_infected": 5.587676503180721e-07,
+            "peak_infected": 14.685017910681502,
+            "infection_fatality_ratio": 1667352801.5269833,
+            "time_to_peak_deaths": 11.17117117117117,
+            "mortality_rate_per_100k": 9316.628071604873,
+            "years_of_life_lost": 284.15715618394864
+        },
+        "60+": {
+            "total_deaths": 14.632154987769502,
+            "peak_daily_deaths": 0.4058900686165434,
+            "average_viral_load": 0.7102483791285895,
+            "case_fatality_rate": 73.16077493884751,
+            "mortality_rate": 0.02,
+            "viral_load_sensitivity": 3.5,
+            "total_infected": 2.765452876708347e-08,
+            "peak_infected": 5.7193727411632995,
+            "infection_fatality_ratio": 52910520049.01927,
+            "time_to_peak_deaths": 11.35135135135135,
+            "mortality_rate_per_100k": 14632.154987769502,
+            "years_of_life_lost": 146.32154987769502
+        }
+    },
+    "summary": {
+        "total_deaths": 26.411344901659334,
+        "peak_daily_deaths": 0.4058900686165434,
+        "average_viral_load": 0.7102483791285894,
+        "total_infected": 2.86928682341664e-10,
+        "peak_infected": 18.59089162308827,
+        "total_recovered": 65.75041421526635,
+        "total_vaccinated": 7.680907642637528,
+        "infection_fatality_ratio": 28.657595923799605,
+        "time_to_peak_deaths": 45.22522522522522,
+        "average_time_to_death": 11.08108108108108,
+        "mortality_rate_per_100k": 26411.344901659333
+    }
+}

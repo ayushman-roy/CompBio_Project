@@ -177,10 +177,10 @@ def create_age_groups() -> List[AgeGroup]:
     """Define age groups and their parameters"""
     return [
         # name, susceptibility, recovery_rate, vaccine_effectiveness, population_fraction, mortality_rate, viral_load_sensitivity
-        AgeGroup("0-19", 0.8, 1.2, 0.7, 0.25, 0.0002, 1.2),    # Children/Teens - slightly higher mortality
-        AgeGroup("20-39", 1.0, 1.0, 0.8, 0.30, 0.001, 1.8),    # Young Adults - higher mortality
-        AgeGroup("40-59", 1.2, 0.9, 0.85, 0.25, 0.005, 2.5),   # Middle Age - significantly higher mortality
-        AgeGroup("60+", 1.5, 0.7, 0.9, 0.20, 0.02, 3.5)        # Elderly - much higher mortality
+        AgeGroup("0-19", 0.8, 1.2, 0.7, 0.25, 0.0002, 1.2),    # Children/Teens - 250,000 people
+        AgeGroup("20-39", 1.0, 1.0, 0.8, 0.30, 0.001, 1.8),    # Young Adults - 300,000 people
+        AgeGroup("40-59", 1.2, 0.9, 0.85, 0.25, 0.005, 2.5),   # Middle Age - 250,000 people
+        AgeGroup("60+", 1.5, 0.7, 0.9, 0.20, 0.02, 3.5)        # Elderly - 200,000 people
     ]
 
 def create_contact_matrix(n_groups: int) -> np.ndarray:
@@ -217,70 +217,72 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
             "description": params.description
         }, f, indent=4)
     
-    # 1. Deaths by age group over time
+    # 1. Deaths by age group over time (as percentage of total population)
     plt.figure(figsize=(12, 8))
     for i in range(n_groups):
-        deaths = results[:, i*n_vars + 5]  # D compartment
+        deaths = results[:, i*n_vars + 5] * 100  # Convert to percentage
         plt.plot(t, deaths, label=age_groups[i].name)
-    plt.title('Cumulative Deaths by Age Group')
+    plt.title('Cumulative Deaths by Age Group (% of Total Population)')
     plt.xlabel('Time (days)')
-    plt.ylabel('Deaths')
+    plt.ylabel('Deaths (% of Population)')
     plt.legend()
     plt.grid(True)
     plt.savefig(f"{analysis_dir}/deaths_by_age.png")
     plt.close()
     
-    # 2. Death rates vs viral load
+    # 2. Death rates vs viral load (as percentage)
     plt.figure(figsize=(12, 8))
     for i in range(n_groups):
-        viral_load = results[:, i*n_vars + 6]  # L compartment
-        deaths = np.diff(results[:, i*n_vars + 5], prepend=0)  # Daily deaths
+        viral_load = results[:, i*n_vars + 6]
+        deaths = np.diff(results[:, i*n_vars + 5], prepend=0) * 100  # Convert to percentage
         plt.scatter(viral_load, deaths, label=age_groups[i].name, alpha=0.5)
-    plt.title('Daily Deaths vs Viral Load')
+    plt.title('Daily Deaths vs Viral Load (% of Population)')
     plt.xlabel('Viral Load')
-    plt.ylabel('Daily Deaths')
+    plt.ylabel('Daily Deaths (% of Population)')
     plt.legend()
     plt.grid(True)
     plt.savefig(f"{analysis_dir}/deaths_vs_viral_load.png")
     plt.close()
     
-    # 3. Time to death analysis
+    # 3. Time to death analysis (as percentage)
     plt.figure(figsize=(12, 8))
     for i in range(n_groups):
-        daily_deaths = np.diff(results[:, i*n_vars + 5], prepend=0)
+        daily_deaths = np.diff(results[:, i*n_vars + 5], prepend=0) * 100  # Convert to percentage
         plt.plot(t, daily_deaths, label=age_groups[i].name)
-    plt.title('Daily Deaths Over Time')
+    plt.title('Daily Deaths Over Time (% of Population)')
     plt.xlabel('Time (days)')
-    plt.ylabel('Daily Deaths')
+    plt.ylabel('Daily Deaths (% of Population)')
     plt.legend()
     plt.grid(True)
     plt.savefig(f"{analysis_dir}/daily_deaths.png")
     plt.close()
     
-    # 4. Mortality risk factors
+    # 4. Mortality risk factors (as percentage)
     plt.figure(figsize=(12, 8))
-    final_deaths = results[-1, 5::n_vars]  # Final death counts
+    final_deaths = results[-1, 5::n_vars] * 100  # Convert to percentage
     age_names = [group.name for group in age_groups]
     plt.bar(age_names, final_deaths)
-    plt.title('Total Deaths by Age Group')
+    plt.title('Total Deaths by Age Group (% of Population)')
     plt.xlabel('Age Group')
-    plt.ylabel('Total Deaths')
+    plt.ylabel('Total Deaths (% of Population)')
     plt.grid(True)
     plt.savefig(f"{analysis_dir}/total_deaths.png")
     plt.close()
     
-    # 5. Save detailed analysis results with enhanced metrics
+    # 5. Save detailed analysis results with enhanced metrics (as percentages)
     analysis_results = {
         "age_groups": {},
         "summary": {
-            "total_deaths": float(np.sum(results[-1, 5::n_vars])),
-            "peak_daily_deaths": float(np.max(np.diff(results[:, 5::n_vars], axis=0))),
+            "total_deaths": float(np.sum(results[-1, 5::n_vars]) * 100),  # Convert to percentage
+            "peak_daily_deaths": float(np.max(np.diff(results[:, 5::n_vars], axis=0)) * 100),  # Convert to percentage
             "average_viral_load": float(np.mean(results[:, 6::n_vars])),
-            "total_infected": float(np.sum(results[-1, 1::n_vars])),  # Total infected at end
-            "peak_infected": float(np.max(results[:, 1::n_vars])),    # Peak infected count
-            "total_recovered": float(np.sum(results[-1, 3::n_vars])), # Total recovered
-            "total_vaccinated": float(np.sum(results[-1, 4::n_vars])),# Total vaccinated
-            "infection_fatality_ratio": float(np.sum(results[-1, 5::n_vars]) / np.sum(results[-1, 1::n_vars]) * 100),
+            "total_infected": float(np.sum(results[-1, 1::n_vars]) * 100),  # Convert to percentage
+            "peak_infected": float(np.max(results[:, 1::n_vars]) * 100),    # Convert to percentage
+            "total_recovered": float(np.sum(results[-1, 3::n_vars]) * 100), # Convert to percentage
+            "total_vaccinated": float(np.sum(results[-1, 4::n_vars]) * 100),# Convert to percentage
+            "infection_fatality_ratio": float(np.sum(results[-1, 5::n_vars]) / 
+                (np.sum(results[-1, 1::n_vars]) + np.sum(results[-1, 2::n_vars]) + 
+                 np.sum(results[-1, 3::n_vars]) + np.sum(results[-1, 5::n_vars])) * 100),
             "time_to_peak_deaths": float(t[np.argmax(np.diff(results[:, 5::n_vars], axis=0))]),
             "average_time_to_death": float(np.mean([t[np.argmax(np.diff(results[:, i*n_vars + 5], prepend=0))] for i in range(n_groups)])),
             "mortality_rate_per_100k": float(np.sum(results[-1, 5::n_vars]) * 100000)
@@ -288,30 +290,47 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
     }
     
     for i, group in enumerate(age_groups):
-        total_deaths = results[-1, i*n_vars + 5]
-        peak_deaths = np.max(np.diff(results[:, i*n_vars + 5], prepend=0))
+        total_deaths = results[-1, i*n_vars + 5] * 100  # Convert to percentage
+        peak_deaths = np.max(np.diff(results[:, i*n_vars + 5], prepend=0)) * 100  # Convert to percentage
         avg_viral_load = np.mean(results[:, i*n_vars + 6])
-        total_infected = results[-1, i*n_vars + 1] + results[-1, i*n_vars + 2]  # I + Q
-        peak_infected = np.max(results[:, i*n_vars + 1] + results[:, i*n_vars + 2])
+        total_infected = (results[-1, i*n_vars + 1] + results[-1, i*n_vars + 2]) * 100  # Convert to percentage
+        peak_infected = np.max(results[:, i*n_vars + 1] + results[:, i*n_vars + 2]) * 100  # Convert to percentage
         age_midpoint = get_age_midpoint(group.name)
         
         analysis_results["age_groups"][group.name] = {
             "total_deaths": float(total_deaths),
             "peak_daily_deaths": float(peak_deaths),
             "average_viral_load": float(avg_viral_load),
-            "case_fatality_rate": float(total_deaths / group.population_fraction * 100),
+            "case_fatality_rate": float(total_deaths / group.population_fraction),
             "mortality_rate": float(group.mortality_rate),
             "viral_load_sensitivity": float(group.viral_load_sensitivity),
             "total_infected": float(total_infected),
             "peak_infected": float(peak_infected),
             "infection_fatality_ratio": float(total_deaths / total_infected * 100 if total_infected > 0 else 0),
             "time_to_peak_deaths": float(t[np.argmax(np.diff(results[:, i*n_vars + 5], prepend=0))]),
-            "mortality_rate_per_100k": float(total_deaths * 100000),
+            "mortality_rate_per_100k": float(total_deaths * 1000),
             "years_of_life_lost": float(total_deaths * (80 - age_midpoint))  # Rough estimate
         }
     
     with open(f"{analysis_dir}/detailed_analysis.json", "w") as f:
         json.dump(analysis_results, f, indent=4)
+
+    # 6. Add new visualization showing relationship between I, Q, and D compartments
+    plt.figure(figsize=(12, 8))
+    for i in range(n_groups):
+        infected = results[:, i*n_vars + 1] * 100  # Convert to percentage
+        quarantined = results[:, i*n_vars + 2] * 100  # Convert to percentage
+        dead = results[:, i*n_vars + 5] * 100  # Convert to percentage
+        plt.plot(t, infected, label=f'{age_groups[i].name} Infected', linestyle='-')
+        plt.plot(t, quarantined, label=f'{age_groups[i].name} Quarantined', linestyle='--')
+        plt.plot(t, dead, label=f'{age_groups[i].name} Dead', linestyle=':')
+    plt.title('Infected, Quarantined, and Dead by Age Group (% of Population)')
+    plt.xlabel('Time (days)')
+    plt.ylabel('Population (%)')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f"{analysis_dir}/compartment_dynamics.png")
+    plt.close()
 
 def compare_scenarios(scenario_dirs: List[str], output_dir: str):
     """Create comparison visualizations across all scenarios"""
@@ -327,27 +346,27 @@ def compare_scenarios(scenario_dirs: List[str], output_dir: str):
             analysis = json.load(f)
         scenario_data.append((params, analysis))
     
-    # 1. Compare total deaths across scenarios
+    # 1. Compare total deaths across scenarios (as percentage)
     plt.figure(figsize=(15, 8))
     scenarios = [data[0]["description"] for data in scenario_data]
     total_deaths = [data[1]["summary"]["total_deaths"] for data in scenario_data]
     plt.bar(scenarios, total_deaths)
-    plt.title('Total Deaths by Scenario')
+    plt.title('Total Deaths by Scenario (% of Population)')
     plt.xlabel('Scenario')
-    plt.ylabel('Total Deaths')
+    plt.ylabel('Total Deaths (% of Population)')
     plt.xticks(rotation=45)
     plt.grid(True)
     plt.tight_layout()
     plt.savefig(f"{comparison_dir}/total_deaths_comparison.png")
     plt.close()
     
-    # 2. Compare peak daily deaths
+    # 2. Compare peak daily deaths (as percentage)
     plt.figure(figsize=(15, 8))
     peak_deaths = [data[1]["summary"]["peak_daily_deaths"] for data in scenario_data]
     plt.bar(scenarios, peak_deaths)
-    plt.title('Peak Daily Deaths by Scenario')
+    plt.title('Peak Daily Deaths by Scenario (% of Population)')
     plt.xlabel('Scenario')
-    plt.ylabel('Peak Daily Deaths')
+    plt.ylabel('Peak Daily Deaths (% of Population)')
     plt.xticks(rotation=45)
     plt.grid(True)
     plt.tight_layout()
@@ -367,7 +386,7 @@ def compare_scenarios(scenario_dirs: List[str], output_dir: str):
     plt.savefig(f"{comparison_dir}/ifr_comparison.png")
     plt.close()
     
-    # 4. Compare age-specific mortality rates
+    # 4. Compare age-specific mortality rates (as percentage)
     age_groups = list(scenario_data[0][1]["age_groups"].keys())
     plt.figure(figsize=(15, 8))
     width = 0.15
@@ -377,7 +396,7 @@ def compare_scenarios(scenario_dirs: List[str], output_dir: str):
         mortality_rates = [analysis["age_groups"][age]["mortality_rate_per_100k"] for age in age_groups]
         plt.bar(x + i*width, mortality_rates, width, label=params["description"])
     
-    plt.title('Age-Specific Mortality Rates by Scenario')
+    plt.title('Age-Specific Mortality Rates by Scenario (per 100,000)')
     plt.xlabel('Age Group')
     plt.ylabel('Mortality Rate per 100,000')
     plt.xticks(x + width*2, age_groups)
@@ -431,12 +450,12 @@ def run_simulation(params: SimulationParameters) -> str:
     # Create model
     model = AgeStructuredViralLoadModel(age_groups, contact_matrix, params)
     
-    # Initial conditions
+    # Initial conditions (as fractions of population)
     initial_state = np.zeros(len(age_groups) * 7)  # 7 variables per age group
     for i, group in enumerate(age_groups):
-        # Set initial susceptible population
+        # Set initial susceptible population (99% of age group)
         initial_state[i*7] = group.population_fraction * 0.99
-        # Set initial infected population
+        # Set initial infected population (1% of age group)
         initial_state[i*7 + 1] = group.population_fraction * 0.01
         # Initial viral load
         initial_state[i*7 + 6] = 0.1
