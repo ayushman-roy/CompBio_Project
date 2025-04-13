@@ -136,14 +136,11 @@ The model includes various intervention scenarios with extreme values:
 
 ```python
 scenarios = [
-    ("baseline", 0.05, 0.002),
-    ("high_quarantine", 0.4, 0.002),      # 80% quarantine rate
-    ("high_vaccination", 0.05, 0.05),     # 10% vaccination rate
-    ("high_both", 0.4, 0.05),            # Both high
+    ("baseline", 0.05, 0.01),
+    ("high_quarantine", 0.40, 0.01),      # 80% quarantine rate
+    ("high_vaccination", 0.05, 0.10),     # 10% vaccination rate
+    ("high_both", 0.40, 0.10),           # Both high
     ("low_both", 0.01, 0.001),           # Minimal interventions
-    ("extreme_quarantine", 0.6, 0.002),   # 120% quarantine rate
-    ("extreme_vaccination", 0.05, 0.1),   # 20% vaccination rate
-    ("extreme_both", 0.6, 0.1)           # Both extreme
 ]
 ```
 
@@ -188,31 +185,6 @@ The model generates detailed analysis including:
 - Intervention effectiveness
 - Healthcare system burden
 - Economic impact estimates
-
-## Analysis and Output
-
-The model generates several types of analysis:
-
-### 1. Individual Scenario Analysis
-- Cumulative deaths by age group
-- Daily death rates
-- Viral load impact on mortality
-- Case fatality rates
-- Peak daily deaths
-- Average viral loads
-
-### 2. Comparison Analysis
-- Total deaths across scenarios
-- Peak daily deaths comparison
-- Infection fatality ratios
-- Age-specific mortality rates
-- Years of life lost
-
-### Output Files
-- **Visualizations**: PNG files showing different aspects of the outbreak
-- **JSON Analysis**: Detailed numerical results
-- **Parameter Files**: Settings used for each simulation
-- **Comparison Summary**: Results across all scenarios
 
 ## Usage
 

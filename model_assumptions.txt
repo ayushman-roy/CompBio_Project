@@ -18,49 +18,64 @@ Model Assumptions and Parameters
 2. Disease Dynamics
 ------------------
 - Viral load follows a three-phase pattern:
-  * Incubation (0-3 days): Slow exponential growth
-  * Peak (3-8 days): Maximum viral load
-  * Decline (8+ days): Exponential decay
+  * Incubation (0-3 days): L(t) = L₀ * exp(αt), α = 0.5, L₀ = 0.1
+  * Peak (3-8 days): L(t) = L_max, L_max = 1.0
+  * Decline (8+ days): L(t) = L_max * exp(-δ(t - t_peak)), δ = 0.1, t_peak = 8
 - Transmission rate depends on:
-  * Base transmission rate (beta)
+  * Base transmission rate (beta = 0.3)
   * Contact rates between age groups
   * Viral load level
   * Age-specific susceptibility
 
 3. Intervention Parameters
 -------------------------
-- Quarantine rate (theta): 0.05
-  * Fraction of infected individuals isolated
-  * Reduces transmission but increases mortality risk
-- Vaccination rate (nu): 0.002
-  * Rate at which susceptible individuals are vaccinated
-  * Effectiveness varies by age group
+- Quarantine rates (theta):
+  * Baseline: 0.05
+  * High: 0.40
+  * Extreme: 0.60
+- Vaccination rates (nu):
+  * Baseline: 0.01
+  * High: 0.10
+  * Extreme: 0.10
 
-4. Mortality Dynamics
---------------------
-- Mortality depends on:
-  * Age group
-  * Viral load level
-  * Time since infection
-  * Quarantine status
-- Base mortality rates by age:
-  * 0-19: 0.0001
-  * 20-39: 0.0005
-  * 40-59: 0.002
-  * 60+: 0.01
-- Viral load sensitivity multipliers:
-  * 0-19: 1.0
-  * 20-39: 1.5
-  * 40-59: 2.0
-  * 60+: 3.0
+4. Age Group Parameters
+----------------------
+- 0-19 years:
+  * Susceptibility: 0.8
+  * Recovery rate: 1.2
+  * Vaccine effectiveness: 0.7
+  * Population fraction: 0.25
+  * Mortality rate: 0.0002
+  * Viral load sensitivity: 1.2
+- 20-39 years:
+  * Susceptibility: 1.0
+  * Recovery rate: 1.0
+  * Vaccine effectiveness: 0.8
+  * Population fraction: 0.30
+  * Mortality rate: 0.001
+  * Viral load sensitivity: 1.8
+- 40-59 years:
+  * Susceptibility: 1.2
+  * Recovery rate: 0.9
+  * Vaccine effectiveness: 0.85
+  * Population fraction: 0.25
+  * Mortality rate: 0.005
+  * Viral load sensitivity: 2.5
+- 60+ years:
+  * Susceptibility: 1.5
+  * Recovery rate: 0.7
+  * Vaccine effectiveness: 0.9
+  * Population fraction: 0.20
+  * Mortality rate: 0.02
+  * Viral load sensitivity: 3.5
 
 5. Contact Patterns
 ------------------
 - Contact matrix represents average daily contacts:
-  * Higher within age groups
-  * Children have more contacts
-  * Elderly have fewer contacts
-  * Inter-generational contacts are asymmetric
+  [3.0, 1.5, 0.5, 0.2]  # Children/Teens
+  [1.5, 2.0, 1.0, 0.3]  # Young Adults
+  [0.5, 1.0, 1.5, 0.5]  # Middle Age
+  [0.2, 0.3, 0.5, 1.0]  # Elderly
 
 6. Model Limitations
 -------------------
@@ -77,13 +92,27 @@ Model Assumptions and Parameters
 7. Simulation Parameters
 -----------------------
 - Time horizon: 180 days
-- Time step: 0.18 days (1000 points)
+- Time steps: 1000 points
+- Numerical integration:
+  * Relative tolerance: 1e-6
+  * Absolute tolerance: 1e-6
 - Initial conditions:
   * 99% susceptible
   * 1% infected
   * Initial viral load: 0.1
 
-8. Output Analysis
+8. Analysis Metrics
+------------------
+- Basic Reproduction Number (R₀):
+  R₀ = β/γ * (1 - θ/(γ + θ + μ))
+- Infection Fatality Ratio (IFR):
+  IFR = D/(I + Q + R + D)
+- Years of Life Lost (YLL):
+  YLL = Σ(D_i * (LE - age_midpoint_i)), LE = 80 years
+- Peak Healthcare Demand:
+  peak_demand = max(I + Q)
+
+9. Output Analysis
 -----------------
 - Tracks:
   * Cumulative deaths by age group
@@ -96,4 +125,5 @@ Model Assumptions and Parameters
   * Time series plots
   * Scatter plots
   * Bar charts
-  * Text analysis files 
+  * JSON analysis files
+  * Comparison visualizations 
