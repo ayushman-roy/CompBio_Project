@@ -277,12 +277,12 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
             "peak_daily_deaths": float(np.max(np.diff(results[:, 5::n_vars], axis=0)) * 100),  # Convert to percentage
             "average_viral_load": float(np.mean(results[:, 6::n_vars])),
             "total_infected": float(np.sum(results[-1, 1::n_vars]) * 100),  # Convert to percentage
+            "total_ever_infected": float(np.sum(results[:, 1::n_vars] + results[:, 2::n_vars] + results[:, 3::n_vars] + results[:, 5::n_vars], axis=1).max() * 100),
             "peak_infected": float(np.max(results[:, 1::n_vars]) * 100),    # Convert to percentage
             "total_recovered": float(np.sum(results[-1, 3::n_vars]) * 100), # Convert to percentage
             "total_vaccinated": float(np.sum(results[-1, 4::n_vars]) * 100),# Convert to percentage
             "infection_fatality_ratio": float(np.sum(results[-1, 5::n_vars]) / 
-                (np.sum(results[-1, 1::n_vars]) + np.sum(results[-1, 2::n_vars]) + 
-                 np.sum(results[-1, 3::n_vars]) + np.sum(results[-1, 5::n_vars])) * 100),
+                (np.sum(results[:, 1::n_vars] + results[:, 2::n_vars] + results[:, 3::n_vars] + results[:, 5::n_vars], axis=1).max()) * 100),
             "time_to_peak_deaths": float(t[np.argmax(np.diff(results[:, 5::n_vars], axis=0))]),
             "average_time_to_death": float(np.mean([t[np.argmax(np.diff(results[:, i*n_vars + 5], prepend=0))] for i in range(n_groups)])),
             "mortality_rate_per_100k": float(np.sum(results[-1, 5::n_vars]) * 100000)
@@ -294,6 +294,7 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
         peak_deaths = np.max(np.diff(results[:, i*n_vars + 5], prepend=0)) * 100  # Convert to percentage
         avg_viral_load = np.mean(results[:, i*n_vars + 6])
         total_infected = (results[-1, i*n_vars + 1] + results[-1, i*n_vars + 2]) * 100  # Convert to percentage
+        total_ever_infected = np.max(results[:, i*n_vars + 1] + results[:, i*n_vars + 2] + results[:, i*n_vars + 3] + results[:, i*n_vars + 5]) * 100
         peak_infected = np.max(results[:, i*n_vars + 1] + results[:, i*n_vars + 2]) * 100  # Convert to percentage
         age_midpoint = get_age_midpoint(group.name)
         
@@ -305,8 +306,9 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
             "mortality_rate": float(group.mortality_rate),
             "viral_load_sensitivity": float(group.viral_load_sensitivity),
             "total_infected": float(total_infected),
+            "total_ever_infected": float(total_ever_infected),
             "peak_infected": float(peak_infected),
-            "infection_fatality_ratio": float(total_deaths / total_infected * 100 if total_infected > 0 else 0),
+            "infection_fatality_ratio": float(total_deaths / total_ever_infected * 100 if total_ever_infected > 0 else 0),
             "time_to_peak_deaths": float(t[np.argmax(np.diff(results[:, i*n_vars + 5], prepend=0))]),
             "mortality_rate_per_100k": float(total_deaths * 1000),
             "years_of_life_lost": float(total_deaths * (80 - age_midpoint))  # Rough estimate
@@ -334,7 +336,7 @@ def analyze_mortality(results: np.ndarray, t: np.ndarray, age_groups: List[AgeGr
 
 def compare_scenarios(scenario_dirs: List[str], output_dir: str):
     """Create comparison visualizations across all scenarios"""
-    comparison_dir = f"{output_dir}/comparison"
+    comparison_dir = os.path.expanduser("/Users/manyasrivastava/Documents/compbio/comparison")
     os.makedirs(comparison_dir, exist_ok=True)
     
     # Load all scenario data
@@ -437,7 +439,8 @@ def run_simulation(params: SimulationParameters) -> str:
     """Run a single simulation with given parameters"""
     # Create output directory with timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = f"output/simulation_{params.description}_{timestamp}"
+    output_dir = os.path.expanduser(f"/Users/manyasrivastava/Documents/compbio/simulation_{params.description}_{timestamp}")
+
     os.makedirs(output_dir, exist_ok=True)
     
     # Time points for simulation

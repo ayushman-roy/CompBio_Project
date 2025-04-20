@@ -32,10 +32,6 @@ ENV/
 
 # Output directories
 output/
-*.png
-*.jpg
-*.jpeg
-*.gif
 
 # Logs
 *.log
